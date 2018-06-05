@@ -102,7 +102,24 @@
    ))
 
 
+(defparameter *scene*
+  (scene-graph *frame*
+               (prefix-scene-graph "left/"  *panda*
+                                   :root "foot"
+                                   :tf (tf* (x-angle (* -.5 pi))
+                                            (vec (- *shoulder-len* *l*)
+                                                 (+ *spine-off* (/ *l* 2))
+                                                 *shoulder-height*)))
+               (prefix-scene-graph "right/"  *panda*
+                                   :root "foot"
+                                   :tf (tf* (x-angle (* .5 pi))
+                                            (vec (- *shoulder-len* *l*)
+                                                 (+ (- *spine-off*) (/ *l* -2))
+                                                 *shoulder-height*)))
+
+               ))
+
 ;(win-set-scene-graph *panda*)
-(win-set-scene-graph *frame*)
+(win-set-scene-graph *scene*)
 
 (win-run)
