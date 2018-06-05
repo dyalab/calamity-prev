@@ -54,14 +54,15 @@
 (defparameter *shoulder-strut-len* (- (vec-norm *shoulder-strut-vec*) 0))
 (defparameter *shoulder-strut-angle* (atanvec *shoulder-strut-vec*))
 
-(defparameter *frame-options* (draw-options-default :color '(.5 .5 .5)))
+(defparameter *frame-options* (draw-options-default :color '(.9 .9 .9)
+                                                    :specular '(1 1 1)))
 
 (defun albox (x y z)
   (scene-geometry-box *frame-options*
                       (vec x y z)))
 (defun albox-z (z)
-  (scene-geometry-box *frame-options*
-                      (vec *l* *l* z)))
+  (albox *l* *l* z))
+
 (defun z-strut (parent name len)
   (scene-frame-fixed parent name
                      :tf (tf* nil (vec 0 0 (* .5 len)))
@@ -229,14 +230,18 @@
                                             (vec (- *shoulder-len* *l*)
                                                  (+ (- *spine-off*) (/ *l* -2))
                                                  *shoulder-height*)))
-               (draw-table "foot" "table"
-                           (draw-options-default :color (octet-color #x3f #x3e #x43))
-                           :tf (tf* nil (vec .6 0 0))
-                           :leg (inches 2)
-                           :height (inches 30)
-                           :width (inches 72)
-                           :thickness (inches 1)
-                           :length (inches 36))))
+               ;; (draw-table "foot" "table"
+               ;;             (draw-options-default
+               ;;              ;:color (octet-color #x3f #x3e #x43)
+               ;;              :color (octet-color 150 75 0)
+               ;;              :specular '(.5 .5 .5))
+               ;;             :tf (tf* nil (vec .6 0 0))
+               ;;             :leg (inches 2)
+               ;;             :height (inches 30)
+               ;;             :width (inches 72)
+               ;;             :thickness (inches 1)
+               ;;             :length (inches 36))
+               ))
 
 (defparameter *configs*
   (alist-configuration-map
@@ -260,3 +265,19 @@
 (win-set-config *configs*)
 
 (win-run)
+
+(setf (win-tf-camera)
+      (TF*
+       (QUATERNION* -0.27981351128657683d0 -0.4615744818575912d0
+                    -0.7198694573721699d0 -0.4363958764034004d0)
+       (VEC3* 2.744059488577463d0 1.4710023847272296d0 1.8807830794159102d0)))
+
+(defparameter *repo-path*
+  (merge-pathnames "git/calamity/"
+                   (user-homedir-pathname)))
+
+;; (render-win :output "calamity.pov"
+;;             :options (render-options-4k)
+;;             :include (merge-pathnames "scene.inc"
+;;                                       *repo-path*)
+;;             )
