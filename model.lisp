@@ -14,8 +14,8 @@
 
 (defparameter *l* 8e-2)
 
-(defparameter *spine-height* 1.75)
-(defparameter *shoulder-height* 1.47)
+(defparameter *spine-height* (inches 64))
+(defparameter *shoulder-height* (- *spine-height* (inches 12)))
 
 
 (defparameter *plate-thickness* .1e-2)
@@ -26,7 +26,8 @@
 
 (defparameter *spine-off* (* *shoulder-top* *g* .5))
 
-
+(defun inches  (x)
+  (* x 2.54e-2))
 
 
 (defun atanvec (v)
@@ -66,13 +67,45 @@
                      :tf (tf* nil (vec 0 0 (* .5 len)))
                      :geometry (albox-z (abs len))))
 
+
+(defun draw-table (parent name
+                     options
+                   &key
+                     tf
+                     height
+                     width
+                     length
+                     thickness
+                     leg)
+  (flet ((leg (leg-name x y)
+           (scene-frame-fixed name (draw-subframe name leg-name)
+                              :tf (tf* nil (vec (- (* x length .5) (* x leg .5))
+                                                (- (* y width .5) (* y leg .5))
+                                                (/ height 2)))
+                              :geometry (scene-geometry-box options
+                                                            (vec leg leg
+                                                                 height )))))
+
+    (scene-graph
+     (scene-frame-fixed parent name
+                        :tf (or tf (tf* nil nil)))
+     (scene-frame-fixed name (draw-subframe name "top")
+                        :tf (tf* nil (vec 0 0 height))
+                        :geometry (scene-geometry-box options (vec length width thickness)))
+     (leg "0" 1 1)
+     (leg "1" 1 -1)
+     (leg "2" -1 1)
+     (leg "3" -1 -1)
+     )))
+
+
 (defparameter *frame*
   (scene-graph
 
    (scene-frame-fixed nil "foot")
 
    (scene-frame-fixed "foot" "plate"
-                      :tf (tf* nil nil)
+                      :tf (tf* nil (vec .25 0 0))
                       :geometry (albox 2 2 *plate-thickness*))
 
    (scene-frame-fixed "foot" "spine "
@@ -196,10 +229,34 @@
                                             (vec (- *shoulder-len* *l*)
                                                  (+ (- *spine-off*) (/ *l* -2))
                                                  *shoulder-height*)))
+               (draw-table "foot" "table"
+                           (draw-options-default :color (octet-color #x3f #x3e #x43))
+                           :tf (tf* nil (vec .6 0 0))
+                           :leg (inches 2)
+                           :height (inches 30)
+                           :width (inches 72)
+                           :thickness (inches 1)
+                           :length (inches 36))))
 
-               ))
+(defparameter *configs*
+  (alist-configuration-map
+   `(
+     ("right/panda_joint2" . ,(*  .25 pi))
+     ("right/panda_joint4" . ,(* -.5 pi))
+     ("right/panda_joint5" . ,(* -.5 pi))
+     ("right/panda_joint6" . ,(* .5 pi))
+     ("right/panda_finger_joint1" . 0)
+
+     ("left/panda_joint2" . ,(*  .25 pi))
+     ("left/panda_joint4" . ,(* -.5 pi))
+     ("left/panda_joint5" . ,(* .5 pi))
+     ("left/panda_joint6" . ,(* .5 pi))
+     ("left/panda_finger_joint1" . 0)
+   )))
 
 ;(win-set-scene-graph *panda*)
 (win-set-scene-graph *scene*)
+
+(win-set-config *configs*)
 
 (win-run)
