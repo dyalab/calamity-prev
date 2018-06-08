@@ -24,8 +24,8 @@ light_source{<6,12,6>
   color rgb<.75,.75,.75>
 
   //color rgb<1,1,1>
-  //area_light <2, 0, 2>, <0, 2, 2>, 10, 10
-  area_light <3, 0, 3>, <0, 3, 3>, 10, 10
+  area_light <2, 0, 2>, <0, 2, 2>, 10, 10
+  //area_light <3, 0, 3>, <0, 3, 3>, 10, 10
 
   parallel
   jitter

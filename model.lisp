@@ -54,8 +54,15 @@
 (defparameter *shoulder-strut-len* (- (vec-norm *shoulder-strut-vec*) 0))
 (defparameter *shoulder-strut-angle* (atanvec *shoulder-strut-vec*))
 
-(defparameter *frame-options* (draw-options-default :color '(.9 .9 .9)
-                                                    :specular '(1 1 1)))
+(defparameter *frame-options* (draw-options-default :color (octet-color 200 200 204)
+                                                    :metallic t
+                                                    ;;:ambient .5
+                                                    :brilliance 1.5
+                                                    :crand .05
+                                                    :reflection 0.05
+                                                    :roughness .01
+                                                    :diffuse 0.9
+                                                    :specular .70))
 
 (defun albox (x y z)
   (scene-geometry-box *frame-options*
@@ -276,8 +283,9 @@
   (merge-pathnames "git/calamity/"
                    (user-homedir-pathname)))
 
-;; (render-win :output "calamity.pov"
-;;             :options (render-options-4k)
-;;             :include (merge-pathnames "scene.inc"
-;;                                       *repo-path*)
-;;             )
+(render-win :output "calamity.pov"
+            ;;:options (render-options-4k)
+            :options (render-options-full-hd)
+            :include (merge-pathnames "scene.inc"
+                                      *repo-path*)
+            )
